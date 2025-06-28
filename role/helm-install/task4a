@@ -1,0 +1,49 @@
+---
+- name: Deploy Prometheus with Helm on Minikube
+  hosts: localhost
+  connection: local
+  vars:
+    prometheus_namespace: monitoring
+    helm_chart_name: prometheus
+    helm_repo_url: https://prometheus-community.github.io/helm-charts
+
+  tasks:
+    - name: Add Prometheus Helm repository
+      kubernetes.core.helm_repository:
+        name: prometheus-community
+        repo_url: "{{ helm_repo_url }}"
+
+    - name: Create monitoring namespace
+      kubernetes.core.k8s:
+        name: "{{ prometheus_namespace }}"
+        api_version: v1
+        kind: Namespace
+        state: present
+
+    - name: Deploy Prometheus using Helm
+      kubernetes.core.helm:
+        name: "{{ helm_chart_name }}"
+        chart_ref: prometheus-community/prometheus
+        release_namespace: "{{ prometheus_namespace }}"
+        create_namespace: true
+        values:
+          server:
+            service:
+              type: NodePort
+          alertmanager:
+            enabled: true
+          pushgateway:
+            enabled: false
+
+    - name: Wait for Prometheus pods to be ready
+      kubernetes.core.k8s_info:
+        api_version: v1
+        kind: Pod
+        namespace: "{{ prometheus_namespace }}"
+        label_selectors:
+          - app=prometheus
+        wait: true
+        wait_condition:
+          type: Ready
+          status: "True"
+        wait_timeout: 300
