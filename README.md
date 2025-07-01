@@ -1,4 +1,6 @@
 ## Managing Helm with kubernetes.core.helm Modules
+<br/>
+
 ### Module Overview
 
 The kubernetes.core collection provides dedicated Helm modules that integrate Helm package management directly into Ansible workflows. The primary modules include kubernetes.core.helm for managing chart installations and releases, and kubernetes.core.helm_repository for repository management. These modules abstract Helm CLI operations into declarative Ansible tasks.
