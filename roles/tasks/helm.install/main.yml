@@ -1,11 +1,4 @@
 ---
-- name: Add Helm repositories
-  kubernetes.core.helm_repository:
-    name: "{{ item.name }}"
-    repo_url: "{{ item.url }}"
-    state: present
-  loop: "{{ helm_repos }}"
-
 - name: Update Helm repositories
   kubernetes.core.helm_repository:
     name: "{{ item.name }}"
