@@ -1,1 +1,42 @@
+---
+- name: Manage Helm Charts
+  hosts: localhost
+  connection: local
+  gather_facts: no
 
+  vars:
+    kubeconfig_path: "~/.kube/config"
+    helm_repos:
+      - name: bitnami
+        url: https://charts.bitnami.com/bitnami
+      - name: stable
+        url: https://charts.helm.sh/stable
+      - name: ingress-nginx
+        url: https://kubernetes.github.io/ingress-nginx
+
+- name: Add Helm repositories
+  kubernetes.core.helm_repository:
+    name: "{{ item.name }}"
+    repo_url: "{{ item.url }}"
+    state: present
+  loop: "{{ helm_repos }}"
+
+- name: Update Helm repositories
+  kubernetes.core.helm_repository:
+    name: "{{ item.name }}"
+    repo_url: "{{ item.url }}"
+    state: present
+    force_update: true 
+  loop: "{{ helm_repos }}"
+
+- name: Install nginx chart
+  kubernetes.core.helm:
+    name: my-nginx
+    chart_ref: bitnami/nginx
+    release_namespace: default 
+    kubeconfig: "{{ kubeconfig_path }}"
+    state: present
+    values:
+      service:
+        type: LoadBalancer
+      replicaCount: 2
