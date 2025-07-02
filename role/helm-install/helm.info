@@ -1,0 +1,30 @@
+---
+- name: Helm Operations
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    kubeconfig_path: "~/.kube/config"
+  
+- name: Get release info
+  kubernetes.core.helm_info:
+    name: my-nginx
+    release_namespace: default
+    kubeconfig: "{{ kubeconfig_path }}"
+  register: release_info
+  ignore_errors: true
+
+- name: Display release status
+  debug:
+    msg: "Release status: {{ release_info.status.status }}"
+  when: release_info is succeeded
+
+- name: Install only if not exists
+  kubernetes.core.helm:
+    name: conditional-app
+    chart_ref: bitnami/nginx
+    release_namespace: default
+    kubeconfig: "{{ kubeconfig_path }}"
+    state: present
+     
