@@ -1,12 +1,4 @@
 ---
-- name: Helm Operations
-  hosts: localhost
-  connection: local
-  gather_facts: false
-
-  vars:
-    kubeconfig_path: "~/.kube/config"
-  
 - name: Get release info
   kubernetes.core.helm_info:
     name: my-nginx
