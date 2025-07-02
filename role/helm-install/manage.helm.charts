@@ -1,5 +1,4 @@
 ---
-# Basic Ansible playbook for managing Helm charts
 - name: Manage Helm Charts
   hosts: localhost
   connection: local
@@ -15,34 +14,29 @@
       - name: ingress-nginx
         url: https://kubernetes.github.io/ingress-nginx
 
-  tasks:
-    # Add Helm repositories
-    - name: Add Helm repositories
-      kubernetes.core.helm_repository:
-        name: "{{ item.name }}"
-        repo_url: "{{ item.url }}"
-        state: present
-      loop: "{{ helm_repos }}"
+- name: Add Helm repositories
+  kubernetes.core.helm_repository:
+    name: "{{ item.name }}"
+    repo_url: "{{ item.url }}"
+    state: present
+  loop: "{{ helm_repos }}"
 
-    # Update Helm repos
-    - name: Update Helm repositories
-      kubernetes.core.helm_repository:
-        name: "{{ item.name }}"
-        repo_url: "{{ item.url }}"
-        state: present
-        force_update: true
-      loop: "{{ helm_repos }}"
+- name: Update Helm repositories
+  kubernetes.core.helm_repository:
+    name: "{{ item.name }}"
+    repo_url: "{{ item.url }}"
+    state: present
+    force_update: true
+  loop: "{{ helm_repos }}"
 
-    # Install a basic app (NGINX)
-    - name: Install nginx chart
-      kubernetes.core.helm:
-        name: my-nginx
-        chart_ref: bitnami/nginx
-        release_namespace: default 
-        kubeconfig: "{{ kubeconfig_path }}"
-        state: present
-        values:
-          service:
-            type: LoadBalancer
-          replicaCount: 2
-     
+- name: Install nginx chart
+  kubernetes.core.helm:
+    name: my-nginx
+    chart_ref: bitnami/nginx
+    release_namespace: default 
+    kubeconfig: "{{ kubeconfig_path }}"
+    state: present
+    values:
+      service:
+        type: LoadBalancer
+      replicaCount: 2
