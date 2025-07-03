@@ -1,0 +1,8 @@
+---
+- name: Helm Operations
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    kubeconfig_path: "~/.kube/config"
